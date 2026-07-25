@@ -4,18 +4,22 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>NHS AI Change Management Portal (V3)</title>
+    <!-- Tailwind CSS for HPCA Branding -->
     <script src="https://cdn.tailwindcss.com"></script>
+    <!-- React & ReactDOM -->
     <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
     <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <!-- Babel for in-browser JSX compiling -->
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    
     <style>
-        body { font-family: 'Inter', sans-serif; background-color: #f8fafc; margin: 0; padding: 0; }
+        body { font-family: 'Inter', system-ui, sans-serif; background-color: #f8fafc; margin: 0; padding: 0; }
         .glass-panel { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); }
         .ai-gradient-text { background: linear-gradient(135deg, #6366f1 0%, #a855f7 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
         .ai-gradient-bg { background: linear-gradient(135deg, #6366f1 0%, #a855f7 100%); }
         @keyframes fadeInUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
         .animate-fade-in-up { animation: fadeInUp 0.4s ease-out forwards; }
-        .custom-scrollbar::-webkit-scrollbar { width: 6px; }
+        .custom-scrollbar::-webkit-scrollbar { width: 6px; height: 6px; }
         .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
         .custom-scrollbar::-webkit-scrollbar-thumb { background-color: #cbd5e1; border-radius: 10px; }
     </style>
@@ -26,6 +30,7 @@
     <script type="text/babel">
         const { useState, useEffect, useRef } = React;
 
+        // Comprehensive Icon Library (Lucide equivalents)
         const Icons = {
             Brain: () => <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M9.5 2A2.5 2.5 0 0 1 12 4.5v15a2.5 2.5 0 0 1-4.96.44 2.5 2.5 0 0 1-2.96-3.08 3 3 0 0 1-.34-5.58 2.5 2.5 0 0 1 1.32-4.24 2.5 2.5 0 0 1 1.98-3A2.5 2.5 0 0 1 9.5 2Z"/><path d="M14.5 2A2.5 2.5 0 0 0 12 4.5v15a2.5 2.5 0 0 0 4.96.44 2.5 2.5 0 0 0 2.96-3.08 3 3 0 0 0 .34-5.58 2.5 2.5 0 0 0-1.32-4.24 2.5 2.5 0 0 0-1.98-3A2.5 2.5 0 0 0 14.5 2Z"/></svg>,
             FileText: () => <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><line x1="10" y1="9" x2="8" y2="9"/></svg>,
@@ -51,13 +56,8 @@
             Github: () => <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M15 22v-4a4.8 4.8 0 0 0-1-3.5c3 0 6-2 6-5.5.08-1.25-.27-2.48-1-3.5.28-1.15.28-2.35 0-3.5 0 0-1 0-3 1.5-2.64-.5-5.36-.5-8 0C6 2 5 2 5 2c-.3 1.15-.3 2.35 0 3.5A5.403 5.403 0 0 0 4 9c0 3.5 3 5.5 6 5.5-.39.49-.68 1.05-.85 1.65-.17.6-.22 1.23-.15 1.85v4"/><path d="M9 18c-4.51 2-5-2-7-2"/></svg>,
             Key: () => <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m15.5 7.5 2.3 2.3a1 1 0 0 0 1.4 0l2.1-2.1a1 1 0 0 0 0-1.4L19 4"/><path d="m21 2-9.6 9.6"/><circle cx="7.5" cy="15.5" r="5.5"/></svg>,
             MonitorPlay: () => <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect width="20" height="14" x="2" y="3" rx="2"/><path d="M12 17v4"/><path d="M8 21h8"/><path d="m10 7 5 3-5 3Z"/></svg>,
-            BarChart2: () => <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
-        };
-
-        const getTonePrompt = (level) => {
-            if (level === 'novice') return "Use extremely simple, encouraging, jargon-free language suitable for a beginner or 'accidental' change manager. Explain concepts step-by-step.";
-            if (level === 'intermediate') return "Use professional project and change management language suitable for an intermediate practitioner. Balance theory with practical steps.";
-            return "Use advanced, highly technical NHS Change Management Toolkit V3 terminology suitable for an expert change management professional. Be highly concise, strategic, and analytical.";
+            BarChart2: () => <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>,
+            ExternalLink: () => <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
         };
 
         const InfoPopup = ({ title, what, why }) => {
@@ -74,11 +74,11 @@
                                 <button onClick={(e) => { e.stopPropagation(); setIsOpen(false); }} className="text-slate-400 hover:text-slate-600 bg-slate-50 rounded p-1"><Icons.Close /></button>
                             </div>
                             <div className="mb-3">
-                                <span className="font-semibold text-slate-800 block mb-1 text-xs uppercase tracking-wider">The What</span>
+                                <span className="font-semibold text-slate-800 block mb-1 text-[10px] uppercase tracking-wider">The What</span>
                                 <p className="text-slate-600 text-xs leading-relaxed">{what}</p>
                             </div>
                             <div>
-                                <span className="font-semibold text-slate-800 block mb-1 text-xs uppercase tracking-wider">The Why</span>
+                                <span className="font-semibold text-slate-800 block mb-1 text-[10px] uppercase tracking-wider">The Why</span>
                                 <p className="text-slate-600 text-xs leading-relaxed">{why}</p>
                             </div>
                         </div>
@@ -89,7 +89,6 @@
 
         const AITypingEffect = ({ text, onComplete, speed = 15 }) => {
             const [displayedText, setDisplayedText] = useState("");
-            
             useEffect(() => {
                 let i = 0;
                 setDisplayedText("");
@@ -104,20 +103,135 @@
                 }, speed);
                 return () => clearInterval(timer);
             }, [text, speed]);
-
             return <span>{displayedText}</span>;
         };
 
-        // Robust Mock API to ensure the demo always works
+        const PhaseTracker = ({ activePhase, title, description, whatNext, toolkitRef = "Toolkit V3" }) => {
+            const [showCommunityModal, setShowCommunityModal] = useState(false);
+            const [showToolkitModal, setShowToolkitModal] = useState(false);
+            const [msg, setMsg] = useState("");
+            const [msgSent, setMsgSent] = useState(false);
+            const phases = [1, 2, 3, 4, 5];
+            
+            return (
+                <div className="bg-white p-6 md:p-8 rounded-2xl shadow-sm border border-slate-200 mb-8 animate-fade-in-up">
+                    {/* Visual Stepper */}
+                    <div className="flex items-center justify-between mb-8 relative max-w-2xl mx-auto px-4">
+                        <div className="absolute left-0 top-1/2 -translate-y-1/2 w-full h-1 bg-slate-100 z-0 rounded-full"></div>
+                        <div className="absolute left-0 top-1/2 -translate-y-1/2 h-1 bg-violet-500 z-0 rounded-full transition-all duration-500" style={{ width: `${((activePhase - 1) / 4) * 100}%` }}></div>
+                        
+                        {phases.map(p => (
+                            <div key={p} className={`z-10 flex flex-col items-center group`}>
+                                <div className={`flex items-center justify-center w-8 h-8 rounded-full font-bold text-xs border-2 transition-all duration-300 ${p === activePhase ? 'bg-violet-600 border-violet-600 text-white shadow-lg scale-110' : p < activePhase ? 'bg-emerald-500 border-emerald-500 text-white' : 'bg-white border-slate-300 text-slate-400'}`}>
+                                    {p < activePhase ? <Icons.Check className="w-4 h-4" /> : p}
+                                </div>
+                                <span className={`absolute mt-10 text-[10px] font-bold uppercase tracking-wider ${p === activePhase ? 'text-violet-700' : 'text-slate-400'} hidden sm:block`}>Phase {p}</span>
+                            </div>
+                        ))}
+                    </div>
+
+                    {/* Introductory Context */}
+                    <div>
+                        <h2 className="text-2xl font-bold text-slate-800 mb-3 flex items-center">
+                            <Icons.Brain className="w-6 h-6 mr-3 text-violet-600" />
+                            {title}
+                        </h2>
+                        <p className="text-base text-slate-600 leading-relaxed mb-5">{description}</p>
+                        <div className="bg-violet-50/50 border border-violet-100 p-4 rounded-xl flex items-start mb-6">
+                            <Icons.Activity className="w-5 h-5 text-violet-600 mr-3 mt-0.5 shrink-0" />
+                            <p className="text-sm text-violet-900"><strong>What's Next:</strong> {whatNext}</p>
+                        </div>
+                        
+                        {/* HPCA Toolkit and Community Resources */}
+                        <div className="flex flex-col sm:flex-row sm:items-center gap-3 pt-5 border-t border-slate-100">
+                            <button onClick={() => setShowToolkitModal(true)} className="flex items-center justify-center px-4 py-2.5 bg-slate-50 border border-slate-200 text-slate-600 rounded-xl text-sm font-medium hover:bg-slate-100 hover:text-violet-700 transition-colors shadow-sm">
+                                <Icons.BookOpen className="w-4 h-4 mr-2 text-slate-400"/> Ref: {toolkitRef} <Icons.ExternalLink className="w-3.5 h-3.5 ml-2 text-slate-400"/>
+                            </button>
+                            <button onClick={() => setShowCommunityModal(true)} className="flex items-center justify-center px-4 py-2.5 bg-violet-50 border border-violet-200 text-violet-700 rounded-xl text-sm font-medium hover:bg-violet-100 transition-colors shadow-sm">
+                                <Icons.Users className="w-4 h-4 mr-2"/> Ask the HPCA Community
+                            </button>
+                        </div>
+                    </div>
+
+                    {/* Community Modal */}
+                    {showCommunityModal && (
+                        <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-[200] flex items-center justify-center p-4" onClick={() => setShowCommunityModal(false)}>
+                            <div className="bg-white rounded-2xl shadow-2xl w-full max-w-lg overflow-hidden animate-fade-in-up" onClick={e => e.stopPropagation()}>
+                                <div className="p-5 border-b border-slate-100 flex justify-between items-center bg-slate-50">
+                                    <h3 className="text-lg font-bold text-slate-800 flex items-center"><Icons.Users className="mr-2 text-violet-600"/> HPCA Community Hub</h3>
+                                    <button onClick={() => setShowCommunityModal(false)} className="text-slate-400 hover:text-slate-600"><Icons.Close /></button>
+                                </div>
+                                <div className="p-6">
+                                    <div className="bg-blue-50 border border-blue-100 p-4 rounded-xl flex items-start mb-5">
+                                        <Icons.HelpCircle className="w-5 h-5 text-blue-600 mr-3 shrink-0 mt-0.5" />
+                                        <p className="text-sm text-blue-800 leading-relaxed">You are asking for peer advice related to <strong>Phase {activePhase}</strong>. Over 4,000 NHS Change Professionals are active in the community ready to help.</p>
+                                    </div>
+                                    {msgSent ? (
+                                        <div className="text-center py-8 animate-fade-in-up">
+                                            <div className="w-16 h-16 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mx-auto mb-4">
+                                                <Icons.CheckCircle className="w-8 h-8" />
+                                            </div>
+                                            <h4 className="text-lg font-bold text-slate-800 mb-2">Question Posted to the Network!</h4>
+                                            <p className="text-sm text-slate-600 mb-6">Your query has been shared. You will receive an email notification as soon as an HPCA peer replies.</p>
+                                            <button onClick={() => { setShowCommunityModal(false); setTimeout(() => setMsgSent(false), 500); }} className="bg-slate-900 text-white px-8 py-2.5 rounded-xl text-sm font-medium hover:bg-slate-800 shadow-md">Done</button>
+                                        </div>
+                                    ) : (
+                                        <div className="animate-fade-in-up">
+                                            <label className="block text-sm font-bold text-slate-700 mb-2">What do you need help with?</label>
+                                            <textarea rows="4" value={msg} onChange={e => setMsg(e.target.value)} placeholder="e.g., How did other Trusts handle resistance from clinical leads during this phase?" className="w-full border border-slate-300 rounded-xl p-3 text-sm focus:ring-2 focus:ring-violet-500 focus:border-violet-500 outline-none resize-none mb-4 shadow-inner"></textarea>
+                                            <div className="flex justify-end gap-3 pt-2">
+                                                <button onClick={() => setShowCommunityModal(false)} className="px-5 py-2.5 rounded-xl text-sm font-medium text-slate-600 hover:bg-slate-100 transition-colors">Cancel</button>
+                                                <button onClick={() => { if(msg.trim()) setMsgSent(true); }} className={`px-5 py-2.5 rounded-xl text-sm font-medium text-white flex items-center transition-all shadow-md ${msg.trim() ? 'bg-violet-600 hover:bg-violet-700' : 'bg-slate-300 cursor-not-allowed'}`}>
+                                                    Post Question <Icons.MessageSquare className="w-4 h-4 ml-2" />
+                                                </button>
+                                            </div>
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
+                        </div>
+                    )}
+
+                    {/* Toolkit Integration Modal */}
+                    {showToolkitModal && (
+                        <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-[200] flex items-center justify-center p-4" onClick={() => setShowToolkitModal(false)}>
+                            <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden animate-fade-in-up" onClick={e => e.stopPropagation()}>
+                                <div className="p-5 border-b border-slate-100 flex justify-between items-center bg-slate-50">
+                                    <h3 className="text-lg font-bold text-slate-800 flex items-center"><Icons.BookOpen className="mr-2 text-violet-600"/> Toolkit Integration</h3>
+                                    <button onClick={() => setShowToolkitModal(false)} className="text-slate-400 hover:text-slate-600"><Icons.Close /></button>
+                                </div>
+                                <div className="p-6 text-center">
+                                    <div className="w-16 h-16 bg-blue-50 text-blue-600 rounded-full flex items-center justify-center mx-auto mb-4">
+                                        <Icons.ExternalLink className="w-8 h-8" />
+                                    </div>
+                                    <h4 className="text-lg font-bold text-slate-800 mb-2">Simulated Navigation</h4>
+                                    <p className="text-sm text-slate-600 mb-6 leading-relaxed">
+                                        In the live production environment, this link will seamlessly open the NHS Change Management Toolkit directly to <strong>{toolkitRef}</strong>. This provides deep-dive theoretical context and printable resources exactly when you need them.
+                                    </p>
+                                    <button onClick={() => setShowToolkitModal(false)} className="bg-slate-900 text-white px-8 py-2.5 rounded-xl text-sm font-medium hover:bg-slate-800 shadow-md transition-colors">
+                                        Understood
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    )}
+                </div>
+            );
+        };
+
         const mockGeminiAnalysis = async (type) => {
             return new Promise((resolve) => {
                 setTimeout(() => {
                     if (type === 'vision') resolve({
                         vision: "  We believe that by automating vitals data collection, we empower our nurses to spend less time on paperwork and more time delivering critical patient care. We will achieve this by deploying secure IoT monitors directly integrated into the EPR. This provides real-time, accurate patient data, reducing clinical risk and enhancing ward efficiency.",
-                        guidance: "Communicate this vision by focusing on 'time saved for patient care' rather than the 'technology itself' to secure immediate nursing buy-in.",
-                        drivers: ["High error rates in manual transcription", "Excessive administrative burden on clinical staff", "National NHS digital transformation mandate"],
-                        benefits: ["2 hours saved per nurse per shift", "30% reduction in transcription errors", "Faster response to patient deterioration"],
-                        risks: ["Patient safety incidents due to missed or incorrectly recorded vital signs", "Continued staff burnout and low morale"]
+                        why: "Manual transcription is causing high error rates and contributing significantly to staff burnout.",
+                        what: "Deploying integrated IoT vitals monitors across all general wards.",
+                        how: "Through targeted training, dedicated floorwalkers, and phased rollout starting with Ward 4.",
+                        caseForChange: {
+                            drivers: ["High error rates in manual transcription", "Excessive administrative burden on clinical staff", "National NHS digital transformation mandate"],
+                            benefits: ["2 hours saved per nurse per shift", "30% reduction in transcription errors", "Faster response to patient deterioration"],
+                            risks: ["Patient safety incidents due to missed or incorrectly recorded vital signs", "Continued staff burnout and low morale"]
+                        }
                     });
                     if (type === 'stakeholder') resolve([
                         { id: 1, name: "Dr. Sarah Jenkins", role: "Clinical Lead", cpig: "Governance", engagement: "Actively Engage" },
@@ -149,7 +263,7 @@
                         { step: 2, type: "Tooltip", element: "Bluetooth Icon", text: "Ensure the patient monitor is turned on, then click here to pair." },
                         { step: 3, type: "Tooltip", element: "Verify Button", text: "Always review the auto-populated data here before saving to the EPR." }
                     ]);
-                }, 1500); // Simulate network delay
+                }, 1500);
             });
         };
 
@@ -162,7 +276,6 @@
 
             return (
                 <div className="space-y-8 max-w-5xl mx-auto animate-fade-in-up pb-10">
-                    {/* Hero Section */}
                     <div className="bg-white rounded-2xl p-8 shadow-sm border border-slate-200 text-center relative overflow-hidden">
                         <div className="absolute top-0 left-0 w-full h-1 ai-gradient-bg"></div>
                         <div className="w-20 h-20 mx-auto bg-violet-100 rounded-2xl flex items-center justify-center mb-6 shadow-inner">
@@ -174,28 +287,17 @@
                         <p className="text-slate-600 text-lg max-w-2xl mx-auto leading-relaxed mb-8">
                             {introContent[experienceLevel]}
                         </p>
-                        <button 
-                            onClick={onStart}
-                            className="bg-slate-900 hover:bg-slate-800 text-white px-8 py-3.5 rounded-xl font-medium transition-all shadow-md hover:shadow-lg flex items-center mx-auto"
-                        >
+                        <button onClick={onStart} className="bg-slate-900 hover:bg-slate-800 text-white px-8 py-3.5 rounded-xl font-medium transition-all shadow-md hover:shadow-lg flex items-center mx-auto">
                             Initiate Project <Icons.Activity className="ml-2 w-4 h-4" />
                         </button>
                     </div>
 
-                    {/* Educational Section */}
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                        
-                        {/* The Change Onion (Page 74 of Toolkit) */}
                         <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
                             <h3 className="text-lg font-bold text-slate-800 mb-4 flex items-center">
                                 <Icons.Layers className="mr-2 text-violet-600"/> What is Change Management?
-                                <InfoPopup 
-                                    title="The Change Onion" 
-                                    what="A conceptual model from the NHS Toolkit (p.74) explaining how different project disciplines layer together." 
-                                    why="It helps project teams understand that 'Implementation' alone doesn't guarantee people will actually adapt to the new process." 
-                                />
+                                <InfoPopup title="The Change Onion" what="A conceptual model from the NHS Toolkit (p.74) explaining how different project disciplines layer together." why="It helps project teams understand that 'Implementation' alone doesn't guarantee people will actually adapt to the new process." />
                             </h3>
-                            
                             <div className="p-4 bg-fuchsia-50 rounded-xl border border-fuchsia-100 text-center relative transition-all duration-300 hover:shadow-md">
                                 <div className="text-xs font-bold text-fuchsia-800 mb-2 uppercase tracking-wide">Transformation (Utopia)</div>
                                 <div className="p-4 bg-violet-100 rounded-lg border border-violet-200 transition-all duration-300 hover:shadow-md">
@@ -208,13 +310,11 @@
                                     </div>
                                 </div>
                             </div>
-                            
                             <p className="text-sm text-slate-600 mt-5 leading-relaxed bg-slate-50 p-3 rounded-lg border border-slate-100">
-                                A great technical solution with mapped processes will not deliver benefits unless the people are bought in. Change management is the <strong>'art' of bringing people on the journey</strong> from the current state to the future state.
+                                A great technical solution with mapped processes will not deliver benefits unless the people are bought in. Change management is the <strong>'art' of bringing people on the journey</strong>.
                             </p>
                         </div>
 
-                        {/* The 5 Phases (Page 3-4 of Toolkit) */}
                         <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 flex flex-col">
                             <h3 className="text-lg font-bold text-slate-800 mb-4 flex items-center">
                                 <Icons.List className="mr-2 text-violet-600"/> The 5-Phase NHS Framework
@@ -243,29 +343,26 @@
         };
 
         const Phase1PreDiscovery = ({ onComplete, experienceLevel }) => {
-            const [stage, setStage] = useState('upload'); // 'upload', 'analyzing', 'results'
+            const [stage, setStage] = useState('upload');
             const [data, setData] = useState(null);
 
-            const handleAnalyze = () => {
+            const handleAnalyze = async () => {
                 setStage('analyzing');
-                setTimeout(() => {
-                    setData({
-                        vision: "We will empower our nursing staff by automating vitals data collection. By deploying secure IoT monitors integrated into the EPR, we aim to reduce administrative burden, providing real-time patient data to reduce clinical risk and enhance ward efficiency.",
-                        why: "Manual transcription is causing high error rates and contributing significantly to staff burnout.",
-                        what: "Deploying integrated IoT vitals monitors across all general wards.",
-                        how: "Through targeted training, dedicated floorwalkers, and phased rollout starting with Ward 4.",
-                        caseForChange: {
-                            drivers: ["High error rates in manual transcription", "Excessive administrative burden on clinical staff", "National NHS digital transformation mandate"],
-                            benefits: ["2 hours saved per nurse per shift", "30% reduction in transcription errors", "Faster response to patient deterioration"],
-                            risks: ["Patient safety incidents due to missed or incorrectly recorded vital signs", "Continued staff burnout and low morale"]
-                        }
-                    });
-                    setStage('results');
-                }, 2000);
+                const res = await mockGeminiAnalysis('vision');
+                setData(res);
+                setStage('results');
             };
 
             return (
-                <div className="max-w-4xl mx-auto space-y-6">
+                <div className="max-w-4xl mx-auto space-y-6 pb-10">
+                    <PhaseTracker 
+                        activePhase={1} 
+                        title="Phase 1: Pre-Discovery"
+                        description="Welcome to the start of your change journey. As a Change Manager, your first goal is to define the 'Why' before anyone designs the 'How'. Upload your raw project notes below. The AI will instantly align your thoughts into a clear NHS Change Vision and a Compelling Case for Change."
+                        whatNext="Once your Vision is defined, we'll progress to Phases 2 & 3 to map your stakeholders, assess the project's impact, and plan your strategy."
+                        toolkitRef="Toolkit Sec 2.1 (p.14)"
+                    />
+
                     <div className="bg-white p-8 rounded-2xl shadow-sm border border-slate-200 text-center relative overflow-hidden">
                         <div className="absolute top-0 left-0 w-full h-1 bg-blue-500"></div>
                         <h2 className="text-xl font-bold text-slate-800 mb-2 flex items-center justify-center">
@@ -293,63 +390,42 @@
 
                     {stage === 'results' && data && (
                         <div className="space-y-6 animate-fade-in-up">
-                            {/* The Vision (Golden Circle) */}
                             <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
                                 <div className="flex justify-between items-center mb-4 border-b pb-2">
                                     <h3 className="text-lg font-bold text-slate-800 flex items-center">
                                         <Icons.Sparkles className="mr-2 text-violet-600"/> Defined Change Vision
-                                        <InfoPopup title="The Change Vision" what="A picture of what the future looks like after the change." why="It tells stakeholders why they should let go of the past and look to the future." />
                                     </h3>
                                 </div>
                                 <p className="text-slate-700 font-medium italic border-l-4 border-violet-500 pl-4 py-2 bg-violet-50 rounded-r-lg mb-6">
                                     "{data.vision}"
                                 </p>
-                                
                                 <h4 className="text-sm font-bold text-slate-800 mb-3 uppercase tracking-wide">Simon Sinek's Golden Circle Breakdown</h4>
                                 <div className="space-y-3">
-                                    <div className="flex items-start">
-                                        <div className="w-16 text-right mr-4 font-bold text-amber-500">WHY</div>
-                                        <div className="flex-1 bg-slate-50 p-2 rounded border border-slate-100 text-sm text-slate-700">{data.why}</div>
-                                    </div>
-                                    <div className="flex items-start">
-                                        <div className="w-16 text-right mr-4 font-bold text-rose-500">HOW</div>
-                                        <div className="flex-1 bg-slate-50 p-2 rounded border border-slate-100 text-sm text-slate-700">{data.how}</div>
-                                    </div>
-                                    <div className="flex items-start">
-                                        <div className="w-16 text-right mr-4 font-bold text-blue-500">WHAT</div>
-                                        <div className="flex-1 bg-slate-50 p-2 rounded border border-slate-100 text-sm text-slate-700">{data.what}</div>
-                                    </div>
+                                    <div className="flex items-start"><div className="w-16 text-right mr-4 font-bold text-amber-500">WHY</div><div className="flex-1 bg-slate-50 p-2 rounded border border-slate-100 text-sm text-slate-700">{data.why}</div></div>
+                                    <div className="flex items-start"><div className="w-16 text-right mr-4 font-bold text-rose-500">HOW</div><div className="flex-1 bg-slate-50 p-2 rounded border border-slate-100 text-sm text-slate-700">{data.how}</div></div>
+                                    <div className="flex items-start"><div className="w-16 text-right mr-4 font-bold text-blue-500">WHAT</div><div className="flex-1 bg-slate-50 p-2 rounded border border-slate-100 text-sm text-slate-700">{data.what}</div></div>
                                 </div>
                             </div>
 
-                            {/* Case for Change */}
                             <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
                                 <h3 className="text-lg font-bold text-slate-800 mb-4 border-b pb-2 flex items-center">
                                     <Icons.Scale className="mr-2 text-violet-600"/> Compelling Case for Change
-                                    <InfoPopup title="Case for Change" what="Explains the reasons, benefits, and risks." why="To demonstrate leadership support and tackle the 'What's in it for me?' questions." />
                                 </h3>
                                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                                     <div className="bg-slate-50 p-4 rounded-xl border border-slate-100">
                                         <h4 className="font-bold text-slate-800 text-sm mb-2 uppercase tracking-wide">Drivers</h4>
-                                        <ul className="list-disc pl-4 text-sm text-slate-600 space-y-1">
-                                            {data.caseForChange.drivers.map((d, i) => <li key={i}>{d}</li>)}
-                                        </ul>
+                                        <ul className="list-disc pl-4 text-sm text-slate-600 space-y-1">{data.caseForChange.drivers.map((d, i) => <li key={i}>{d}</li>)}</ul>
                                     </div>
                                     <div className="bg-emerald-50 p-4 rounded-xl border border-emerald-100">
                                         <h4 className="font-bold text-emerald-800 text-sm mb-2 uppercase tracking-wide">Expected Benefits</h4>
-                                        <ul className="list-disc pl-4 text-sm text-emerald-700 space-y-1">
-                                            {data.caseForChange.benefits.map((b, i) => <li key={i}>{b}</li>)}
-                                        </ul>
+                                        <ul className="list-disc pl-4 text-sm text-emerald-700 space-y-1">{data.caseForChange.benefits.map((b, i) => <li key={i}>{b}</li>)}</ul>
                                     </div>
                                     <div className="bg-rose-50 p-4 rounded-xl border border-rose-100">
                                         <h4 className="font-bold text-rose-800 text-sm mb-2 uppercase tracking-wide">Risks of Inaction</h4>
-                                        <ul className="list-disc pl-4 text-sm text-rose-700 space-y-1">
-                                            {data.caseForChange.risks.map((r, i) => <li key={i}>{r}</li>)}
-                                        </ul>
+                                        <ul className="list-disc pl-4 text-sm text-rose-700 space-y-1">{data.caseForChange.risks.map((r, i) => <li key={i}>{r}</li>)}</ul>
                                     </div>
                                 </div>
                             </div>
-                            
                             <div className="flex justify-end">
                                 <button onClick={onComplete} className="bg-slate-900 text-white px-6 py-3 rounded-xl font-medium hover:bg-slate-800 transition-colors shadow-md flex items-center">
                                     Proceed to Phase 2: Solution Design <Icons.Check className="ml-2" />
@@ -369,58 +445,21 @@
                 { id: 'forcefield', label: 'Force-Field', icon: Icons.Scale },
                 { id: 'impact', label: 'Impact Score', icon: Icons.Activity },
                 { id: 'lna', label: 'Skills Gap (LNA)', icon: Icons.BookOpen },
-                { id: 'comms', label: 'Nudge Comms', icon: Icons.MessageSquare },
-                { id: 'dat', label: 'In-App DAT', icon: Icons.Layers }
+                { id: 'comms', label: 'Nudge Comms', icon: Icons.MessageSquare }
             ];
-
-            const ToolTabs = () => (
-                <div className="flex space-x-1 border-b border-slate-200 mb-6 overflow-x-auto custom-scrollbar pb-1">
-                    {tabs.map(tab => (
-                        <button
-                            key={tab.id}
-                            onClick={() => setActiveTab(tab.id)}
-                            className={`flex items-center px-4 py-2.5 text-sm font-medium rounded-t-lg whitespace-nowrap transition-colors ${
-                                activeTab === tab.id 
-                                ? 'bg-violet-50 text-violet-700 border-b-2 border-violet-600' 
-                                : 'text-slate-500 hover:text-slate-800 hover:bg-slate-50'
-                            }`}
-                        >
-                            <tab.icon className="w-4 h-4 mr-2" /> {tab.label}
-                        </button>
-                    ))}
-                </div>
-            );
 
             const StakeholderApp = () => {
                 const [analyzing, setAnalyzing] = useState(false);
-                const [data, setData] = useState([
-                    { id: 1, name: "Dr. Sarah Jenkins", role: "Clinical Lead", cpig: "Pending...", engagement: "Pending..." },
-                    { id: 2, name: "Mark Thorne", role: "Ward Manager", cpig: "Pending...", engagement: "Pending..." },
-                    { id: 3, name: "Nursing Staff", role: "End Users", cpig: "Pending...", engagement: "Pending..." },
-                    { id: 4, name: "IT Helpdesk", role: "Support", cpig: "Pending...", engagement: "Pending..." }
-                ]);
-                
-                const handleAnalyze = async () => {
-                    setAnalyzing(true);
-                    const res = await mockGeminiAnalysis('stakeholder');
-                    setData(res);
-                    setAnalyzing(false);
-                };
-
+                const [data, setData] = useState([{ id: 1, name: "Dr. Sarah Jenkins", role: "Clinical Lead", cpig: "Pending...", engagement: "Pending..." }]);
+                const handleAnalyze = async () => { setAnalyzing(true); setData(await mockGeminiAnalysis('stakeholder')); setAnalyzing(false); };
                 return (
                     <div>
-                        <h3 className="text-lg font-semibold flex items-center mb-3">Stakeholder Mapping <InfoPopup title="CPIG Framework" what="Categorizes stakeholders into Customers, Providers, Influencers, and Governance." why="Ensures targeted engagement strategies based on specific power/interest." /></h3>
-                        <div className="bg-slate-50 border border-slate-200 rounded-xl p-4 mb-5 space-y-1.5">
-                            <p className="text-sm text-slate-700"><strong className="text-slate-900">What it is:</strong> Categorizes stakeholders into Customers, Providers, Influencers, and Governance (CPIG).</p>
-                            <p className="text-sm text-slate-700"><strong className="text-slate-900">Benefit:</strong> Ensures targeted engagement strategies based on specific power and interest, saving time and preventing key groups from being ignored.</p>
-                        </div>
+                        <h3 className="text-lg font-semibold flex items-center mb-3">Stakeholder Mapping <InfoPopup title="CPIG Framework" what="Categorizes stakeholders into Customers, Providers, Influencers, and Governance." why="Ensures targeted engagement strategies." /></h3>
                         <button onClick={handleAnalyze} disabled={analyzing} className="mb-4 bg-violet-100 text-violet-700 px-4 py-2 rounded-lg text-sm font-medium hover:bg-violet-200">
                             {analyzing ? 'Categorizing...' : 'AI Categorize (CPIG)'}
                         </button>
                         <table className="w-full text-sm text-left">
-                            <thead className="bg-slate-50 text-slate-600">
-                                <tr><th className="p-3">Name</th><th className="p-3">Role</th><th className="p-3">CPIG Category</th><th className="p-3">Engagement Strategy</th></tr>
-                            </thead>
+                            <thead className="bg-slate-50 text-slate-600"><tr><th className="p-3">Name</th><th className="p-3">Role</th><th className="p-3">CPIG Category</th><th className="p-3">Engagement Strategy</th></tr></thead>
                             <tbody>
                                 {data.map(row => (
                                     <tr key={row.id} className="border-b border-slate-100">
@@ -438,19 +477,10 @@
             const ForceFieldApp = () => {
                 const [analyzing, setAnalyzing] = useState(false);
                 const [data, setData] = useState(null);
-                const handleAnalyze = async () => {
-                    setAnalyzing(true);
-                    const res = await mockGeminiAnalysis('forcefield');
-                    setData(res);
-                    setAnalyzing(false);
-                };
+                const handleAnalyze = async () => { setAnalyzing(true); setData(await mockGeminiAnalysis('forcefield')); setAnalyzing(false); };
                 return (
                     <div>
-                        <h3 className="text-lg font-semibold flex items-center mb-3">Lewin's Force-Field Analysis <InfoPopup title="Force-Field Analysis" what="Diagnostic tool mapping driving vs restraining forces." why="Visually maps the battlefield to help you reduce resistance." /></h3>
-                        <div className="bg-slate-50 border border-slate-200 rounded-xl p-4 mb-5 space-y-1.5">
-                            <p className="text-sm text-slate-700"><strong className="text-slate-900">What it is:</strong> A diagnostic tool that maps the driving forces pushing for change against the restraining forces holding it back.</p>
-                            <p className="text-sm text-slate-700"><strong className="text-slate-900">Benefit:</strong> Visually maps the battlefield, helping you create targeted action plans to reduce resistance rather than just pushing harder.</p>
-                        </div>
+                        <h3 className="text-lg font-semibold flex items-center mb-3">Lewin's Force-Field Analysis</h3>
                         <button onClick={handleAnalyze} disabled={analyzing} className="mb-6 bg-violet-100 text-violet-700 px-4 py-2 rounded-lg text-sm font-medium hover:bg-violet-200">
                             {analyzing ? 'Analyzing Forces...' : 'AI Auto-Analyze Forces'}
                         </button>
@@ -469,31 +499,59 @@
                     </div>
                 );
             };
+            
+            const ImpactApp = () => {
+                const [analyzing, setAnalyzing] = useState(false);
+                const [data, setData] = useState(null);
+                const handleAnalyze = async () => { setAnalyzing(true); setData(await mockGeminiAnalysis('impact')); setAnalyzing(false); };
+                return (
+                    <div>
+                        <h3 className="text-lg font-semibold flex items-center mb-3">Change Impact Assessment</h3>
+                        <button onClick={handleAnalyze} disabled={analyzing} className="mb-6 bg-violet-100 text-violet-700 px-4 py-2 rounded-lg text-sm font-medium hover:bg-violet-200">
+                            {analyzing ? 'Calculating Impact...' : 'AI Calculate Impact Score'}
+                        </button>
+                        {data && (
+                            <div className="bg-white p-5 rounded-xl border border-slate-200 shadow-sm animate-fade-in-up">
+                                <div className="flex flex-col md:flex-row md:items-center justify-between mb-5 border-b border-slate-100 pb-5 gap-4">
+                                    <div className="flex items-center">
+                                        <div className="w-16 h-16 rounded-full border-4 border-violet-100 flex items-center justify-center text-2xl font-bold text-violet-600 mr-4 shadow-sm shrink-0">{data.score}</div>
+                                        <div>
+                                            <h4 className="font-bold text-slate-800 text-lg">Overall Change Score</h4>
+                                            <div className="w-48 bg-slate-100 h-2 rounded-full overflow-hidden mt-2">
+                                                <div className={`h-full ${data.score > 70 ? 'bg-rose-500' : 'bg-emerald-500'}`} style={{width: `${data.score}%`}}></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div className="flex space-x-2 text-[11px] font-medium text-center shrink-0">
+                                        <div className={`w-20 py-1.5 rounded-lg border flex flex-col justify-center transition-all relative ${data.score > 70 ? 'bg-rose-100 border-rose-300 text-rose-800 shadow-sm' : 'bg-slate-50 border-slate-100 text-slate-400'}`}>
+                                            <span>71-100</span><span className="font-bold">HIGH</span>
+                                            {data.score > 70 && <div className="absolute -top-1 -right-1 w-2.5 h-2.5 bg-rose-500 rounded-full animate-ping"></div>}
+                                        </div>
+                                    </div>
+                                </div>
+                                <div className="bg-slate-50 p-4 rounded-xl border border-slate-100">
+                                    <span className="font-semibold text-slate-800 text-sm block mb-1">AI Justification:</span>
+                                    <p className="text-sm text-slate-600 leading-relaxed">{data.justification}</p>
+                                </div>
+                            </div>
+                        )}
+                    </div>
+                );
+            };
 
             const LNAApp = () => {
                 const [analyzing, setAnalyzing] = useState(false);
                 const [data, setData] = useState(null);
-                const handleAnalyze = async () => {
-                    setAnalyzing(true);
-                    const res = await mockGeminiAnalysis('lna');
-                    setData(res);
-                    setAnalyzing(false);
-                };
+                const handleAnalyze = async () => { setAnalyzing(true); setData(await mockGeminiAnalysis('lna')); setAnalyzing(false); };
                 return (
                     <div>
-                        <h3 className="text-lg font-semibold flex items-center mb-3">Learning Needs Analysis (LNA) <InfoPopup title="LNA" what="Identifies the gap between current skills and future state skills." why="Ensures training is laser-focused rather than generic." /></h3>
-                        <div className="bg-slate-50 border border-slate-200 rounded-xl p-4 mb-5 space-y-1.5">
-                            <p className="text-sm text-slate-700"><strong className="text-slate-900">What it is:</strong> Identifies the exact gap between a user's current skills and the specific skills required for the future state.</p>
-                            <p className="text-sm text-slate-700"><strong className="text-slate-900">Benefit:</strong> Ensures training is laser-focused and practical, preventing the waste of resources on generic, blanket classroom-style training.</p>
-                        </div>
+                        <h3 className="text-lg font-semibold flex items-center mb-3">Learning Needs Analysis (LNA)</h3>
                         <button onClick={handleAnalyze} disabled={analyzing} className="mb-6 bg-violet-100 text-violet-700 px-4 py-2 rounded-lg text-sm font-medium hover:bg-violet-200">
                             {analyzing ? 'Mapping Skills...' : 'AI Generate Skills Matrix'}
                         </button>
                         {data && (
                             <table className="w-full text-sm text-left animate-fade-in-up">
-                                <thead className="bg-slate-50 text-slate-600">
-                                    <tr><th className="p-3">Required Skill</th><th className="p-3">Identified Gap</th><th className="p-3">Recommended Delivery Method</th></tr>
-                                </thead>
+                                <thead className="bg-slate-50 text-slate-600"><tr><th className="p-3">Required Skill</th><th className="p-3">Identified Gap</th><th className="p-3">Recommended Method</th></tr></thead>
                                 <tbody>
                                     {data.map((row, i) => (
                                         <tr key={i} className="border-b border-slate-100">
@@ -512,33 +570,26 @@
             const CommsApp = () => {
                 const [loading, setLoading] = useState(false);
                 const [draft, setDraft] = useState("");
-                const [channel, setChannel] = useState("Email");
-                const channels = ["Email", "Ward Poster", "Intranet Update", "Huddle Briefing"];
-
-                const handleGenerate = async () => {
-                    setLoading(true);
-                    const res = await mockGeminiAnalysis('comms'); // In a real app, pass `channel` to prompt
-                    setDraft(`[Format: ${channel}]\n\n${res}`);
-                    setLoading(false);
-                };
-
+                const handleGenerate = async () => { setLoading(true); const res = await mockGeminiAnalysis('comms'); setDraft(`[Format: Email]\n\n${res}`); setLoading(false); };
                 return (
                     <div>
-                        <h3 className="text-lg font-semibold flex items-center mb-3">Nudge Communications <InfoPopup title="Nudge Theory" what="Subtle, positive reinforcement to influence behavior." why="Subtly shapes the environment to make the 'right' choice the easiest choice." /></h3>
-                        <div className="bg-slate-50 border border-slate-200 rounded-xl p-4 mb-5 space-y-1.5">
-                            <p className="text-sm text-slate-700"><strong className="text-slate-900">What it is:</strong> Applies behavioural science (Nudge Theory) to subtly guide users toward the desired change across various media channels.</p>
-                            <p className="text-sm text-slate-700"><strong className="text-slate-900">Benefit:</strong> Shapes the environment to make the 'right' choice the easiest choice, appealing to users' emotional drivers rather than just relying on facts and logic.</p>
+                        <div className="bg-blue-50 border border-blue-100 p-4 rounded-xl mb-6 flex items-start">
+                            <Icons.MessageSquare className="w-5 h-5 text-blue-600 mr-3 shrink-0 mt-0.5" />
+                            <div>
+                                <h4 className="font-bold text-blue-900 text-sm mb-1">Context & Benefit: Nudge Communications</h4>
+                                <p className="text-sm text-blue-800 leading-relaxed">Drafting engaging updates from scratch is time-consuming. This tool uses AI and behavioral psychology (Nudge Theory) to instantly draft channel-specific messages that subtly encourage staff adoption and reduce anxiety.</p>
+                            </div>
                         </div>
-                        <div className="flex space-x-2 mb-4">
-                            {channels.map(c => (
-                                <button key={c} onClick={() => setChannel(c)} className={`px-3 py-1.5 rounded-full text-xs font-medium border ${channel === c ? 'bg-violet-600 text-white border-violet-600' : 'bg-white text-slate-600 border-slate-200 hover:bg-slate-50'}`}>{c}</button>
+                        <h3 className="text-lg font-semibold flex items-center mb-3">Draft Nudge Communications</h3>
+                        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
+                            {['Formal Email', 'Ward Poster', 'Intranet News', 'Huddle Briefing'].map(channel => (
+                                <button key={channel} onClick={handleGenerate} disabled={loading} className="bg-white border border-slate-200 text-slate-700 px-3 py-2.5 rounded-lg text-sm font-medium hover:bg-violet-50 hover:text-violet-700 hover:border-violet-300 transition-all text-center">
+                                    {loading ? 'Drafting...' : channel}
+                                </button>
                             ))}
                         </div>
-                        <button onClick={handleGenerate} disabled={loading} className="mb-4 bg-violet-100 text-violet-700 px-4 py-2 rounded-lg text-sm font-medium hover:bg-violet-200">
-                            {loading ? 'Drafting...' : `Draft ${channel}`}
-                        </button>
                         {draft && (
-                            <div className="bg-slate-50 p-4 rounded-xl border border-slate-200 whitespace-pre-wrap text-sm text-slate-700 font-medium animate-fade-in-up">
+                            <div className="bg-slate-50 p-5 rounded-xl border border-slate-200 whitespace-pre-wrap text-sm text-slate-700 font-medium animate-fade-in-up shadow-inner">
                                 <AITypingEffect text={draft} speed={10}/>
                             </div>
                         )}
@@ -546,141 +597,171 @@
                 );
             };
 
-            const ImpactApp = () => {
-                const [analyzing, setAnalyzing] = useState(false);
-                const [data, setData] = useState(null);
-                
-                const handleAnalyze = async () => {
-                    setAnalyzing(true);
-                    const res = await mockGeminiAnalysis('impact');
-                    setData(res);
-                    setAnalyzing(false);
-                };
-                
-                return (
-                    <div>
-                        <h3 className="text-lg font-semibold flex items-center mb-3">Change Impact Assessment <InfoPopup title="Impact Assessment" what="Evaluates the complexity of the new process and how far it deviates from current operations." why="Helps determine the scale of change management intervention required to ensure successful adoption." /></h3>
-                        <div className="bg-slate-50 border border-slate-200 rounded-xl p-4 mb-5 space-y-1.5">
-                            <p className="text-sm text-slate-700"><strong className="text-slate-900">What it is:</strong> Evaluates the complexity of the new process and how significantly it deviates from current 'Business As Usual' operations.</p>
-                            <p className="text-sm text-slate-700"><strong className="text-slate-900">Benefit:</strong> Provides a quantitative score to determine the scale of change management interventions required, ensuring highly disruptive changes are properly resourced.</p>
-                        </div>
-                        <button onClick={handleAnalyze} disabled={analyzing} className="mb-6 bg-violet-100 text-violet-700 px-4 py-2 rounded-lg text-sm font-medium hover:bg-violet-200">
-                            {analyzing ? 'Calculating Impact...' : 'AI Calculate Impact Score'}
-                        </button>
-                        {data && (
-                            <div className="bg-white p-5 rounded-xl border border-slate-200 shadow-sm animate-fade-in-up">
-                                <div className="flex flex-col md:flex-row md:items-center justify-between mb-5 border-b border-slate-100 pb-5 gap-4">
-                                    <div className="flex items-center">
-                                        <div className="w-16 h-16 rounded-full border-4 border-violet-100 flex items-center justify-center text-2xl font-bold text-violet-600 mr-4 shadow-sm shrink-0">
-                                            {data.score}
-                                        </div>
-                                        <div>
-                                            <h4 className="font-bold text-slate-800 text-lg">Overall Change Score</h4>
-                                            <div className={`font-bold text-sm tracking-wide mt-0.5 ${data.score > 70 ? 'text-rose-600' : data.score > 40 ? 'text-amber-600' : 'text-emerald-600'}`}>
-                                                {data.score > 70 ? 'HIGH IMPACT' : data.score > 40 ? 'MODERATE IMPACT' : 'LOW IMPACT'}
-                                            </div>
-                                            <div className="w-48 bg-slate-100 h-2 rounded-full overflow-hidden mt-2">
-                                                <div className={`h-full ${data.score > 70 ? 'bg-rose-500' : data.score > 40 ? 'bg-amber-400' : 'bg-emerald-500'}`} style={{width: `${data.score}%`}}></div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    
-                                    {/* Visual Context Scale */}
-                                    <div className="flex space-x-2 text-[11px] font-medium text-center shrink-0">
-                                        <div className={`w-20 py-1.5 rounded-lg border flex flex-col justify-center transition-all ${data.score <= 40 ? 'bg-emerald-100 border-emerald-300 text-emerald-800 shadow-sm' : 'bg-slate-50 border-slate-100 text-slate-400'}`}>
-                                            <span>0-40</span><span className="font-bold">LOW</span>
-                                        </div>
-                                        <div className={`w-20 py-1.5 rounded-lg border flex flex-col justify-center transition-all ${data.score > 40 && data.score <= 70 ? 'bg-amber-100 border-amber-300 text-amber-800 shadow-sm' : 'bg-slate-50 border-slate-100 text-slate-400'}`}>
-                                            <span>41-70</span><span className="font-bold">MODERATE</span>
-                                        </div>
-                                        <div className={`w-20 py-1.5 rounded-lg border flex flex-col justify-center transition-all relative ${data.score > 70 ? 'bg-rose-100 border-rose-300 text-rose-800 shadow-sm' : 'bg-slate-50 border-slate-100 text-slate-400'}`}>
-                                            <span>71-100</span><span className="font-bold">HIGH</span>
-                                            {data.score > 70 && <div className="absolute -top-1 -right-1 w-2.5 h-2.5 bg-rose-500 rounded-full animate-ping"></div>}
-                                        </div>
-                                    </div>
-                                </div>
-                                <div className="bg-slate-50 p-4 rounded-xl border border-slate-100">
-                                    <span className="font-semibold text-slate-800 text-sm block mb-1">AI Justification:</span>
-                                    <p className="text-sm text-slate-600 leading-relaxed">{data.justification}</p>
-                                </div>
+            return (
+                <div className="max-w-5xl mx-auto space-y-6 pb-10">
+                    <PhaseTracker 
+                        activePhase={3} 
+                        title="Phases 2 & 3: Solution Design & Development"
+                        description="With your vision approved, you are now in the planning stages. Use the interactive App Suite below to digitize your NHS Toolkit templates. Assess who is impacted, map the cultural forces for and against the change, and draft targeted Nudge communications."
+                        whatNext="Once your Engagement and Skills plans are drafted, we will move to Phase 4 to deploy the change to the live environment."
+                        toolkitRef="Toolkit Sec 3.0 (p.28)"
+                    />
+                    <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
+                        
+                        {}
+                        <div className="bg-blue-50 border border-blue-100 p-4 rounded-xl mb-6 flex items-start animate-fade-in-up">
+                            <Icons.Settings className="w-5 h-5 text-blue-600 mr-3 shrink-0 mt-0.5" />
+                            <div>
+                                <h4 className="font-bold text-blue-900 text-sm mb-1">Live Environment Context</h4>
+                                <p className="text-sm text-blue-800 leading-relaxed">
+                                    In this demonstration, these tabs showcase AI-generated templates to illustrate capability. In the live production portal, each tab operates as a <strong>fully functional, interactive application</strong>. Change Managers will be able to manually edit stakeholder maps, drag-and-drop force-field metrics, and save all data directly to their secure project database.
+                                </p>
                             </div>
-                        )}
-                    </div>
-                );
-            };
-
-            const DATApp = () => {
-                const [analyzing, setAnalyzing] = useState(false);
-                const [data, setData] = useState(null);
-                
-                const handleAnalyze = async () => {
-                    setAnalyzing(true);
-                    const res = await mockGeminiAnalysis('dat');
-                    setData(res);
-                    setAnalyzing(false);
-                };
-                
-                return (
-                    <div>
-                        <h3 className="text-lg font-semibold flex items-center mb-3">Digital Adoption Toolkit (DAT) <InfoPopup title="DAT Walkthroughs" what="In-app guidance and tooltips injected directly into the new software." why="Reduces reliance on classroom training by supporting users directly in the flow of work." /></h3>
-                        <div className="bg-slate-50 border border-slate-200 rounded-xl p-4 mb-5 space-y-1.5">
-                            <p className="text-sm text-slate-700"><strong className="text-slate-900">What it is:</strong> Designs step-by-step in-app guidance, popups, and tooltips injected directly into the new software interface.</p>
-                            <p className="text-sm text-slate-700"><strong className="text-slate-900">Benefit:</strong> Supports users right in the flow of their daily work, significantly reducing the need for lengthy manual training and lowering IT helpdesk tickets.</p>
                         </div>
-                        <button onClick={handleAnalyze} disabled={analyzing} className="mb-6 bg-violet-100 text-violet-700 px-4 py-2 rounded-lg text-sm font-medium hover:bg-violet-200">
-                            {analyzing ? 'Generating Sequence...' : 'AI Generate In-App Walkthrough'}
+
+                        <div className="flex space-x-1 border-b border-slate-200 mb-6 overflow-x-auto custom-scrollbar pb-1">
+                            {tabs.map(tab => (
+                                <button key={tab.id} onClick={() => setActiveTab(tab.id)} className={`flex items-center px-4 py-2.5 text-sm font-medium rounded-t-lg whitespace-nowrap transition-colors ${activeTab === tab.id ? 'bg-violet-50 text-violet-700 border-b-2 border-violet-600' : 'text-slate-500 hover:text-slate-800 hover:bg-slate-50'}`}>
+                                    <tab.icon className="w-4 h-4 mr-2" /> {tab.label}
+                                </button>
+                            ))}
+                        </div>
+                        <div className="min-h-[300px]">
+                            {activeTab === 'stakeholder' && <StakeholderApp />}
+                            {activeTab === 'forcefield' && <ForceFieldApp />}
+                            {activeTab === 'impact' && <ImpactApp />}
+                            {activeTab === 'lna' && <LNAApp />}
+                            {activeTab === 'comms' && <CommsApp />}
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+
+        const Phase4Deployment = () => {
+            const [analyzing, setAnalyzing] = useState(false);
+            const [data, setData] = useState(null);
+            const handleAnalyze = async () => { setAnalyzing(true); setData(await mockGeminiAnalysis('dat')); setAnalyzing(false); };
+            
+            return (
+                <div className="max-w-4xl mx-auto space-y-6 pb-10">
+                    <PhaseTracker 
+                        activePhase={4} 
+                        title="Phase 4: Deployment"
+                        description="It is Go-Live time. This phase is about executing your plans and supporting staff through the physical transition to the new ways of working. A key tool here is the Digital Adoption Walkthrough, which provides immediate on-the-job support to prevent productivity dips."
+                        whatNext="After deployment, you will move to Phase 5 to measure adoption and ensure the change is sustained over time."
+                        toolkitRef="Toolkit Sec 4.2 (p.52)"
+                    />
+                    <div className="bg-white p-6 md:p-8 rounded-2xl shadow-sm border border-slate-200">
+                        <div className="bg-blue-50 border border-blue-100 p-4 rounded-xl mb-6 flex items-start">
+                            <Icons.Layers className="w-5 h-5 text-blue-600 mr-3 shrink-0 mt-0.5" />
+                            <div>
+                                <h4 className="font-bold text-blue-900 text-sm mb-1">Context & Benefit: Digital Adoption Toolkit (DAT)</h4>
+                                <p className="text-sm text-blue-800 leading-relaxed">Traditional classroom training is quickly forgotten. The DAT generates automated, in-app popups and tooltips that guide users step-by-step through the live software, ensuring they have help exactly when they need it.</p>
+                            </div>
+                        </div>
+
+                        <h3 className="text-lg font-semibold flex items-center mb-3">Generate Go-Live Walkthrough</h3>
+                        <p className="text-sm text-slate-500 mb-6">Create in-app guidance based on the high-risk workflows defined in Phase 3.</p>
+                        
+                        <button onClick={handleAnalyze} disabled={analyzing} className="mb-6 bg-slate-900 text-white px-6 py-3.5 rounded-xl text-sm font-medium hover:bg-slate-800 shadow-md flex items-center transition-all">
+                            {analyzing ? 'Generating Sequence...' : 'AI Generate In-App Walkthrough'} <Icons.Sparkles className="ml-2 w-4 h-4"/>
                         </button>
+                        
                         {data && (
-                            <div className="space-y-3 animate-fade-in-up">
+                            <div className="space-y-4 animate-fade-in-up">
                                 {data.map((step, i) => (
-                                    <div key={i} className="flex items-start bg-slate-50 p-4 rounded-xl border border-slate-200 shadow-sm">
-                                        <div className="w-6 h-6 rounded-full bg-violet-600 text-white text-xs font-bold flex items-center justify-center mr-3 shrink-0 mt-0.5">{step.step}</div>
+                                    <div key={i} className="flex items-start bg-slate-50 p-5 rounded-xl border border-slate-200 shadow-sm hover:border-violet-300 transition-colors">
+                                        <div className="w-8 h-8 rounded-full bg-violet-600 text-white text-sm font-bold flex items-center justify-center mr-4 shrink-0 mt-0.5 shadow-md">{step.step}</div>
                                         <div>
-                                            <div className="flex items-center space-x-2 mb-1">
-                                                <span className="font-semibold text-slate-800 text-sm">{step.element}</span>
-                                                <span className="px-2 py-0.5 bg-blue-100 text-blue-700 text-[10px] rounded uppercase font-bold tracking-wider">{step.type}</span>
+                                            <div className="flex items-center space-x-3 mb-2">
+                                                <span className="font-bold text-slate-800 text-base">{step.element}</span>
+                                                <span className="px-2 py-1 bg-blue-100 text-blue-800 text-[10px] rounded uppercase font-bold tracking-wider">{step.type}</span>
                                             </div>
-                                            <p className="text-sm text-slate-600">{step.text}</p>
+                                            <p className="text-sm text-slate-600 leading-relaxed">{step.text}</p>
                                         </div>
                                     </div>
                                 ))}
                             </div>
                         )}
                     </div>
-                );
-            };
+                </div>
+            );
+        };
 
+        const Phase5PostDeployment = () => {
+            const [analyzing, setAnalyzing] = useState(false);
+            const [data, setData] = useState(null);
+            const handleAnalyze = async () => { setAnalyzing(true); setData(await mockGeminiAnalysis('adkar')); setAnalyzing(false); };
+            
             return (
-                <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 max-w-5xl mx-auto">
-                    <ToolTabs />
-                    <div className="min-h-[300px]">
-                        {activeTab === 'stakeholder' && <StakeholderApp />}
-                        {activeTab === 'forcefield' && <ForceFieldApp />}
-                        {activeTab === 'impact' && <ImpactApp />}
-                        {activeTab === 'lna' && <LNAApp />}
-                        {activeTab === 'comms' && <CommsApp />}
-                        {activeTab === 'dat' && <DATApp />}
+                <div className="max-w-4xl mx-auto space-y-6 pb-10">
+                    <PhaseTracker 
+                        activePhase={5} 
+                        title="Phase 5: Post-Deployment"
+                        description="The technology is live, but is the change sustained? In this final phase, you must evaluate adoption and reinforce positive behaviors. Use the AI to analyze post-live survey feedback against the ADKAR model to instantly diagnose root causes of resistance."
+                        whatNext="Review your Learning Portfolio to see the CPD hours and badges you've earned across this journey!"
+                        toolkitRef="Toolkit Sec 5.1 (p.68)"
+                    />
+                    <div className="bg-white p-6 md:p-8 rounded-2xl shadow-sm border border-slate-200">
+                        <div className="bg-blue-50 border border-blue-100 p-4 rounded-xl mb-6 flex items-start">
+                            <Icons.Target className="w-5 h-5 text-blue-600 mr-3 shrink-0 mt-0.5" />
+                            <div>
+                                <h4 className="font-bold text-blue-900 text-sm mb-1">Context & Benefit: ADKAR Gap Analysis</h4>
+                                <p className="text-sm text-blue-800 leading-relaxed">It's hard to know *why* staff aren't using a new system. This tool ingests raw survey feedback and maps it to the 5 ADKAR pillars, pinpointing exactly where the change is breaking down so you can apply targeted interventions.</p>
+                            </div>
+                        </div>
+
+                        <h3 className="text-lg font-semibold flex items-center mb-3">Diagnostic Survey Assessment</h3>
+                        <p className="text-sm text-slate-500 mb-6">Analyze raw ward feedback to measure adoption across Awareness, Desire, Knowledge, Ability, and Reinforcement.</p>
+                        
+                        <button onClick={handleAnalyze} disabled={analyzing} className="mb-6 bg-slate-900 text-white px-6 py-3.5 rounded-xl text-sm font-medium hover:bg-slate-800 shadow-md flex items-center transition-all">
+                            {analyzing ? 'Analyzing Survey Data...' : 'AI Diagnose ADKAR Gaps'} <Icons.Activity className="ml-2 w-4 h-4"/>
+                        </button>
+                        
+                        {data && (
+                            <div className="space-y-6 animate-fade-in-up">
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    {[
+                                        { key: 'awareness', label: 'Awareness', ...data.awareness },
+                                        { key: 'desire', label: 'Desire', ...data.desire },
+                                        { key: 'knowledge', label: 'Knowledge', ...data.knowledge },
+                                        { key: 'ability', label: 'Ability', ...data.ability },
+                                        { key: 'reinforcement', label: 'Reinforcement', ...data.reinforcement }
+                                    ].map((item, i) => (
+                                        <div key={i} className={`p-5 rounded-xl border ${item.score < 50 ? 'bg-rose-50 border-rose-200 shadow-sm' : item.score < 75 ? 'bg-amber-50 border-amber-200' : 'bg-emerald-50 border-emerald-200'}`}>
+                                            <div className="flex justify-between items-center mb-3 border-b border-white/50 pb-2">
+                                                <h4 className="font-bold text-slate-800 uppercase tracking-wider text-xs">{item.label}</h4>
+                                                <span className={`font-black text-xl ${item.score < 50 ? 'text-rose-600' : item.score < 75 ? 'text-amber-600' : 'text-emerald-600'}`}>{item.score}%</span>
+                                            </div>
+                                            <p className="text-sm text-slate-700 leading-relaxed font-medium">{item.comment}</p>
+                                        </div>
+                                    ))}
+                                </div>
+                                <div className="bg-slate-900 p-6 rounded-xl border border-slate-800 shadow-xl text-white relative overflow-hidden">
+                                    <div className="absolute top-0 right-0 -mr-4 -mt-4 text-violet-500/20"><Icons.Sparkles className="w-32 h-32"/></div>
+                                    <h4 className="text-xs font-bold text-violet-400 uppercase tracking-wider mb-3 flex items-center relative z-10"><Icons.Brain className="w-4 h-4 mr-2"/> AI Recommended Corrective Action</h4>
+                                    <p className="text-base font-medium leading-relaxed relative z-10">{data.action}</p>
+                                </div>
+                            </div>
+                        )}
                     </div>
                 </div>
             );
         };
 
         const TrainingSimulator = () => {
-            const [chat, setChat] = useState([
-                { sender: 'ai', text: "Welcome to the HPCA Sandbox. You are about to implement 'Virtual Wards'. Your key stakeholder, Dr. Jenkins, is resistant. She says: 'This is just more admin for my team, we don't have time to monitor patients at home.'" }
-            ]);
+            const [chat, setChat] = useState([{ sender: 'ai', text: "Welcome to the HPCA Sandbox. You are about to implement 'Virtual Wards'. Your key stakeholder, Dr. Jenkins, is resistant. She says: 'This is just more admin for my team.'" }]);
             const [input, setInput] = useState('');
-
             const handleSend = () => {
                 if (!input.trim()) return;
                 const newChat = [...chat, { sender: 'user', text: input }];
                 setChat(newChat);
                 setInput('');
                 setTimeout(() => {
-                    setChat([...newChat, { sender: 'ai', text: "Good use of the 'What's In It For Me' (WIIFM) principle! Dr. Jenkins responds: 'I see how it saves bed space, but the tech must be reliable.' (Simulation paused - you handled the initial resistance well.)" }]);
+                    setChat([...newChat, { sender: 'ai', text: "Good use of the 'What's In It For Me' (WIIFM) principle! Dr. Jenkins responds: 'I see how it saves bed space, but the tech must be reliable.' (Simulation paused)" }]);
                 }, 1500);
             };
-
             return (
                 <div className="max-w-5xl mx-auto bg-white p-6 rounded-2xl shadow-sm border border-slate-200 h-[calc(100vh-120px)] flex flex-col animate-fade-in-up">
                     <div className="flex justify-between items-center mb-6 pb-4 border-b border-slate-100">
@@ -688,237 +769,68 @@
                             <h2 className="text-xl font-bold text-slate-800 flex items-center"><Icons.MonitorPlay className="mr-2 text-violet-600"/> HPCA Training Sandbox</h2>
                             <p className="text-sm text-slate-500">Cohort 42 - Scenario: Virtual Wards Resistance Management</p>
                         </div>
-                        <span className="bg-amber-100 text-amber-800 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider hidden sm:block">Live Simulation</span>
                     </div>
-                    
                     <div className="flex-1 bg-slate-50 rounded-xl border border-slate-200 p-4 mb-4 overflow-y-auto space-y-4">
                         {chat.map((msg, i) => (
                             <div key={i} className={`flex ${msg.sender === 'user' ? 'justify-end' : 'justify-start'}`}>
                                 <div className={`max-w-[85%] sm:max-w-[75%] p-4 rounded-2xl text-sm ${msg.sender === 'user' ? 'bg-violet-600 text-white rounded-br-none shadow-md' : 'bg-white text-slate-700 border border-slate-200 rounded-bl-none shadow-sm'}`}>
-                                    {msg.sender === 'ai' && <strong className="block text-violet-800 mb-1 text-xs uppercase tracking-wider">AI Persona / Coach</strong>}
                                     {msg.text}
                                 </div>
                             </div>
                         ))}
                     </div>
-                    
                     <div className="flex gap-2">
-                        <input 
-                            type="text" 
-                            value={input} 
-                            onChange={(e) => setInput(e.target.value)} 
-                            onKeyPress={(e) => e.key === 'Enter' && handleSend()}
-                            placeholder="Type your response to Dr. Jenkins..." 
-                            className="flex-1 border border-slate-300 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-violet-500 focus:ring-1 focus:ring-violet-500"
-                        />
+                        <input type="text" value={input} onChange={(e) => setInput(e.target.value)} onKeyPress={(e) => e.key === 'Enter' && handleSend()} placeholder="Type your response to Dr. Jenkins..." className="flex-1 border border-slate-300 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-violet-500 focus:ring-1 focus:ring-violet-500" />
                         <button onClick={handleSend} className="bg-slate-900 hover:bg-slate-800 text-white px-6 rounded-xl font-medium transition-colors">Respond</button>
                     </div>
                 </div>
             );
         };
 
-        const PostDeployment = () => {
-            const [data, setData] = useState(null);
-            const [analyzing, setAnalyzing] = useState(false);
-
-            const handleAnalyze = async () => {
-                setAnalyzing(true);
-                const res = await mockGeminiAnalysis('adkar');
-                setData(res);
-                setAnalyzing(false);
-            };
-
-            return (
-                <div className="max-w-4xl mx-auto space-y-6">
-                    <div className="bg-white p-8 rounded-2xl shadow-sm border border-slate-200 text-center">
-                         <h2 className="text-xl font-bold text-slate-800 mb-2 flex items-center justify-center">
-                            Phase 5: Post Deployment (ADKAR)
-                            <InfoPopup title="ADKAR Model" what="Framework focusing on Awareness, Desire, Knowledge, Ability, and Reinforcement." why="Pinpoints exactly where change is failing. (e.g., If 'Ability' is low, more comms won't help)." />
-                        </h2>
-                        <p className="text-slate-500 mb-6">Import post-go-live user survey data to automatically diagnose adoption gaps.</p>
-                        <button onClick={handleAnalyze} disabled={analyzing} className="bg-slate-900 text-white px-6 py-2.5 rounded-lg font-medium hover:bg-slate-800 transition-colors">
-                            {analyzing ? 'Analyzing Survey Data...' : 'Run ADKAR Diagnostic'}
-                        </button>
-                    </div>
-
-                    {data && (
-                        <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm animate-fade-in-up">
-                            <h3 className="font-bold text-slate-800 mb-4 border-b pb-2">ADKAR Health Check</h3>
-                            <div className="space-y-4">
-                                {Object.entries(data).filter(([k]) => k !== 'action').map(([key, val]) => (
-                                    <div key={key} className="flex items-center">
-                                        <div className="w-32 font-semibold text-sm text-slate-700 capitalize">{key}</div>
-                                        <div className="flex-1 bg-slate-100 h-3 rounded-full overflow-hidden mr-4">
-                                            <div className={`h-full ${val.score > 75 ? 'bg-emerald-500' : val.score > 50 ? 'bg-amber-400' : 'bg-rose-500'}`} style={{width: `${val.score}%`}}></div>
-                                        </div>
-                                        <div className="w-10 text-right text-xs font-bold text-slate-500">{val.score}%</div>
-                                    </div>
-                                ))}
-                            </div>
-                            <div className="mt-6 bg-rose-50 p-4 rounded-xl border border-rose-100">
-                                <span className="font-bold text-rose-800 text-sm block mb-1">AI Recommended Corrective Action:</span>
-                                <p className="text-sm text-rose-700">{data.action}</p>
-                            </div>
-                        </div>
-                    )}
-                </div>
-            );
-        };
-
-        const Reporting = () => (
-            <div className="max-w-4xl mx-auto bg-white p-8 rounded-2xl shadow-sm border border-slate-200 text-center">
-                <Icons.PieChart className="mx-auto w-12 h-12 text-slate-300 mb-4" />
-                <h2 className="text-2xl font-bold text-slate-800 mb-2">Reporting Library</h2>
-                <p className="text-slate-500 mb-8">Download generated NHS Toolkit V3 artifacts.</p>
-                <div className="grid grid-cols-2 gap-4 text-left">
-                    {['Phase 1: Project Vision & Case.pdf', 'Phase 2: CPIG Stakeholder Matrix.xlsx', 'Phase 3: Engagement & Comms Plan.pdf', 'Phase 5: ADKAR Adoption Report.pdf'].map((doc, i) => (
-                        <div key={i} className="flex justify-between items-center p-4 border border-slate-100 rounded-xl hover:border-violet-200 hover:bg-violet-50 transition-colors cursor-pointer">
-                            <span className="text-sm font-medium text-slate-700 flex items-center"><Icons.FileText className="w-4 h-4 mr-2 text-violet-500"/>{doc}</span>
-                            <Icons.Download className="w-4 h-4 text-slate-400"/>
-                        </div>
-                    ))}
-                </div>
-            </div>
-        );
-
-        const DevelopmentLog = () => {
-            const logs = [
-                {
-                    version: "V3.0",
-                    title: "The Capability Ecosystem",
-                    date: "July 2026",
-                    status: "Latest",
-                    color: "violet",
-                    changes: [
-                        "Added 'Learning Portfolio' to track user CPD and generate a Digital Adoption CV.",
-                        "Integrated 'Training Simulator' sandbox for cohort-based scenario practice.",
-                        "Launched 'Enterprise Analytics' with AI Predictive Toolkit Insights for macro-level tracking.",
-                        "Added Portal Versioning and Development Log timeline."
-                    ]
+        const LearningPortfolio = () => {
+            const projects = [
+                { 
+                    name: "Digital Vitals Sync (IoT)", 
+                    phase: "Completed", 
+                    icon: Icons.CheckCircle, 
+                    colorClass: "bg-emerald-100 text-emerald-600",
+                    badgeClass: "bg-emerald-50 text-emerald-700 border-emerald-200", 
+                    summary: "Saved 2 hours per nurse per shift. Change sustained over 6-month review period with 92% ADKAR reinforcement score." 
                 },
-                {
-                    version: "V2.1",
-                    title: "Adaptive Learning & UX",
-                    date: "June 2026",
-                    status: "Stable",
-                    color: "blue",
-                    changes: [
-                        "Introduced 'Experience Level' global selector (Novice, Intermediate, Expert).",
-                        "Implemented dynamic AI Tone generation based on user experience level.",
-                        "Added interactive 'What & Why' educational popups to demystify Toolkit terminology."
-                    ]
+                { 
+                    name: "EPR Migration - Ward 4", 
+                    phase: "Completed", 
+                    icon: Icons.CheckCircle, 
+                    colorClass: "bg-emerald-100 text-emerald-600",
+                    badgeClass: "bg-emerald-50 text-emerald-700 border-emerald-200", 
+                    summary: "Achieved 95% adoption rate within 2 weeks. Zero critical clinical transcription errors post-launch." 
                 },
-                {
-                    version: "V2.0",
-                    title: "Interactive App Suite",
-                    date: "May 2026",
-                    status: "Stable",
-                    color: "emerald",
-                    changes: [
-                        "Converted static Toolkit templates into live mini-apps.",
-                        "Added CPIG Stakeholder Mapping with AI categorization.",
-                        "Added Force-Field Analysis and Skills Gap (LNA) generator.",
-                        "Added Nudge Comms generator with multi-channel support (Email, Poster, etc.).",
-                        "Added Change Impact Calculator."
-                    ]
+                { 
+                    name: "Virtual Wards Pilot", 
+                    phase: "Phase 4: Deployment", 
+                    icon: Icons.MonitorPlay, 
+                    colorClass: "bg-blue-100 text-blue-600",
+                    badgeClass: "bg-blue-50 text-blue-700 border-blue-200", 
+                    summary: "Go-Live scheduled for next week. Digital Adoption Walkthroughs (DAT) configured and floorwalkers mobilized." 
                 },
-                {
-                    version: "V1.0",
-                    title: "Initial AI Co-Pilot",
-                    date: "April 2026",
-                    status: "Legacy",
-                    color: "slate",
-                    changes: [
-                        "Initial concept launch of the HPCA Hub.",
-                        "Implemented document drag-and-drop feature for Pre-Discovery.",
-                        "Integrated baseline Gemini AI to generate Golden Circle Vision and Case for Change.",
-                        "Digitised the 5-Phase NHS Toolkit framework overview."
-                    ]
+                { 
+                    name: "Outpatient Self-Check-in", 
+                    phase: "Phase 1: Pre-Discovery", 
+                    icon: Icons.Brain, 
+                    colorClass: "bg-amber-100 text-amber-600",
+                    badgeClass: "bg-amber-50 text-amber-700 border-amber-200", 
+                    summary: "Change vision defined. CPIG stakeholder mapping and Case for Change currently underway." 
+                },
+                { 
+                    name: "e-Prescribing Rollout", 
+                    phase: "Phase 1: Pre-Discovery", 
+                    icon: Icons.Brain, 
+                    colorClass: "bg-amber-100 text-amber-600",
+                    badgeClass: "bg-amber-50 text-amber-700 border-amber-200", 
+                    summary: "Initial executive engagement. Drafting the Compelling Case for Change." 
                 }
             ];
 
-            return (
-                <div className="max-w-4xl mx-auto space-y-6 animate-fade-in-up pb-10">
-                    <div className="bg-white p-8 rounded-2xl shadow-sm border border-slate-200 mb-8">
-                        <div className="flex items-center justify-between border-b border-slate-100 pb-4 mb-6">
-                            <div>
-                                <h2 className="text-2xl font-bold text-slate-800 flex items-center">
-                                    <Icons.History className="mr-3 text-violet-600 w-6 h-6"/> Platform Development Log
-                                </h2>
-                                <p className="text-slate-500 mt-1">Tracking the evolution of the HPCA AI Change Management Portal.</p>
-                            </div>
-                            <span className="px-4 py-1.5 bg-slate-900 text-white text-sm font-bold rounded-full shadow-sm">
-                                Current: V3.0
-                            </span>
-                        </div>
-
-                        <div className="space-y-8 relative before:absolute before:inset-0 before:ml-5 before:-translate-x-px md:before:mx-auto md:before:translate-x-0 before:h-full before:w-0.5 before:bg-gradient-to-b before:from-violet-500 before:via-slate-200 before:to-transparent">
-                            {logs.map((log, index) => (
-                                <div key={index} className="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group">
-                                    <div className={`flex items-center justify-center w-10 h-10 rounded-full border-4 border-white bg-${log.color}-100 text-${log.color}-600 shadow-sm shrink-0 md:order-1 md:group-odd:-translate-x-1/2 md:group-even:translate-x-1/2 z-10`}>
-                                        {index === 0 ? <Icons.Sparkles className="w-4 h-4"/> : <div className={`w-2.5 h-2.5 rounded-full bg-${log.color}-500`}></div>}
-                                    </div>
-                                    <div className={`w-[calc(100%-4rem)] md:w-[calc(50%-2.5rem)] bg-white p-5 rounded-xl border ${index === 0 ? 'border-violet-300 shadow-md ring-1 ring-violet-50' : 'border-slate-200 shadow-sm'} transition-all hover:shadow-md`}>
-                                        <div className="flex flex-wrap items-center justify-between mb-2 gap-2">
-                                            <h3 className={`font-bold text-lg ${index === 0 ? 'text-violet-800' : 'text-slate-800'}`}>
-                                                {log.version}: {log.title}
-                                            </h3>
-                                            <div className="flex space-x-2">
-                                                <span className="text-xs font-medium text-slate-400 bg-slate-100 px-2 py-1 rounded">{log.date}</span>
-                                                <span className={`text-xs font-bold px-2 py-1 rounded ${index === 0 ? 'bg-violet-100 text-violet-700' : 'bg-slate-100 text-slate-500'}`}>{log.status}</span>
-                                            </div>
-                                        </div>
-                                        <ul className="space-y-2 mt-3">
-                                            {log.changes.map((change, i) => (
-                                                <li key={i} className="text-sm text-slate-600 flex items-start">
-                                                    <span className={`mr-2 mt-1 flex-shrink-0 w-1.5 h-1.5 rounded-full ${index === 0 ? 'bg-violet-400' : 'bg-slate-300'}`}></span>
-                                                    {change}
-                                                </li>
-                                            ))}
-                                        </ul>
-                                    </div>
-                                </div>
-                            ))}
-                        </div>
-                    </div>
-                </div>
-            );
-        };
-
-        const ActionsLog = () => {
-            const actions = [
-                { id: 1, task: "Complete Stakeholder CPIG Matrix", owner: "Sarah Jenkins", phase: "Pre-Discovery", status: "Done" },
-                { id: 2, task: "Draft Nudge Comms for Ward 4", owner: "Mark Thorne", phase: "Solution Design", status: "In Progress" },
-                { id: 3, task: "Run LNA Workshop", owner: "Training Team", phase: "Development", status: "Pending" },
-                { id: 4, task: "Execute ADKAR Survey", owner: "Change Team", phase: "Post-Deployment", status: "Pending" }
-            ];
-            return (
-                <div className="max-w-5xl mx-auto bg-white p-8 rounded-2xl shadow-sm border border-slate-200 animate-fade-in-up">
-                    <h2 className="text-2xl font-bold text-slate-800 mb-6 flex items-center"><Icons.List className="mr-3 text-violet-600 w-6 h-6"/> Actions Log</h2>
-                    <div className="overflow-x-auto">
-                        <table className="w-full text-sm text-left">
-                            <thead className="bg-slate-50 text-slate-600 border-b border-slate-200">
-                                <tr><th className="p-4 font-bold">Task</th><th className="p-4 font-bold">Owner</th><th className="p-4 font-bold">Phase</th><th className="p-4 font-bold">Status</th></tr>
-                            </thead>
-                            <tbody>
-                                {actions.map(action => (
-                                    <tr key={action.id} className="border-b border-slate-100 hover:bg-slate-50 transition-colors">
-                                        <td className="p-4 font-medium text-slate-800">{action.task}</td>
-                                        <td className="p-4 text-slate-600">{action.owner}</td>
-                                        <td className="p-4 text-slate-500">{action.phase}</td>
-                                        <td className="p-4">
-                                            <span className={`px-2.5 py-1 rounded-md text-[11px] font-bold uppercase tracking-wider ${action.status === 'Done' ? 'bg-emerald-100 text-emerald-700' : action.status === 'In Progress' ? 'bg-amber-100 text-amber-700' : 'bg-slate-100 text-slate-600'}`}>{action.status}</span>
-                                        </td>
-                                    </tr>
-                                ))}
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            );
-        };
-
-        const LearningPortfolio = () => {
             return (
                 <div className="max-w-5xl mx-auto space-y-6 animate-fade-in-up pb-10">
                     <div className="bg-white p-8 rounded-2xl shadow-sm border border-slate-200 flex items-center justify-between">
@@ -930,7 +842,7 @@
                             <Icons.Download className="mr-2 w-4 h-4"/> Export CV
                         </button>
                     </div>
-
+                    
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                         <div className="md:col-span-2 bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
                             <h3 className="text-lg font-bold text-slate-800 mb-6 flex items-center"><Icons.Sparkles className="mr-2 text-violet-500 w-5 h-5"/> Earned Badges</h3>
@@ -952,7 +864,25 @@
                             <div className="w-full bg-slate-100 h-2.5 rounded-full overflow-hidden mb-4 shadow-inner">
                                 <div className="bg-emerald-500 h-full rounded-full" style={{width: '75%'}}></div>
                             </div>
-                            <p className="text-xs text-slate-500 font-medium leading-relaxed">You are in the top 20% of users this month. Only 5.5 hours remaining to hit your annual target.</p>
+                            <p className="text-xs text-slate-500 font-medium leading-relaxed">You are in the top 20% of users this month.</p>
+                        </div>
+                    </div>
+
+                    <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
+                        <h3 className="text-lg font-bold text-slate-800 mb-6 flex items-center"><Icons.Layers className="mr-2 text-violet-500 w-5 h-5"/> Project Experience Log</h3>
+                        <div className="grid grid-cols-1 gap-4">
+                            {projects.map((proj, i) => (
+                                <div key={i} className="flex items-start p-5 bg-slate-50 rounded-xl border border-slate-100 hover:bg-white hover:shadow-md transition-all group">
+                                    <div className={`w-12 h-12 rounded-full ${proj.colorClass} flex items-center justify-center mr-4 shrink-0 shadow-sm group-hover:scale-110 transition-transform`}><proj.icon className="w-6 h-6"/></div>
+                                    <div className="flex-1">
+                                        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center mb-2 gap-2">
+                                            <h4 className="font-bold text-slate-800 text-base">{proj.name}</h4>
+                                            <span className={`text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-md ${proj.badgeClass} self-start sm:self-auto shadow-sm`}>{proj.phase}</span>
+                                        </div>
+                                        <p className="text-sm text-slate-600 leading-relaxed font-medium">{proj.summary}</p>
+                                    </div>
+                                </div>
+                            ))}
                         </div>
                     </div>
                 </div>
@@ -965,7 +895,6 @@
                     <h2 className="text-2xl font-bold text-slate-800 flex items-center"><Icons.BarChart2 className="mr-2 text-violet-600"/> NHS E Capability Ecosystem</h2>
                     <p className="text-slate-500">Macro-analytics and predictive toolkit intelligence.</p>
                 </div>
-
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                     {[
                         { label: "Active Portal Users", val: "4,281", trend: "+12% this month" },
@@ -979,17 +908,11 @@
                         </div>
                     ))}
                 </div>
-
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                     <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
                         <h3 className="font-bold text-slate-800 mb-4">Phase Engagement Heatmap</h3>
                         <div className="space-y-4">
-                            {[
-                                { phase: "Ph 1: Pre-Discovery", usage: 95 },
-                                { phase: "Ph 2/3: Planning Apps", usage: 82 },
-                                { phase: "Ph 4: DAT Walkthroughs", usage: 45 },
-                                { phase: "Ph 5: Post-Deployment ADKAR", usage: 60 }
-                            ].map((p, i) => (
+                            {[{ phase: "Ph 1: Pre-Discovery", usage: 95 }, { phase: "Ph 2/3: Planning Apps", usage: 82 }, { phase: "Ph 4: DAT Walkthroughs", usage: 45 }, { phase: "Ph 5: Post-Deployment ADKAR", usage: 60 }].map((p, i) => (
                                 <div key={i}>
                                     <div className="flex justify-between text-xs font-bold mb-1 text-slate-600"><span>{p.phase}</span><span>{p.usage}%</span></div>
                                     <div className="w-full bg-slate-100 h-2 rounded-full overflow-hidden">
@@ -999,19 +922,13 @@
                             ))}
                         </div>
                     </div>
-
                     <div className="bg-gradient-to-br from-slate-900 to-slate-800 p-6 rounded-2xl shadow-lg border border-slate-700 relative overflow-hidden">
                         <div className="absolute top-0 right-0 -mr-4 -mt-4 text-violet-500/20"><Icons.Sparkles className="w-32 h-32"/></div>
                         <h3 className="font-bold text-white mb-4 flex items-center z-10 relative"><Icons.Brain className="mr-2 text-violet-400"/> AI Predictive Toolkit Insights</h3>
-                        
                         <div className="space-y-4 z-10 relative">
                             <div className="bg-rose-500/10 border border-rose-500/20 p-4 rounded-xl">
                                 <span className="text-rose-400 font-bold text-xs uppercase tracking-wider block mb-1">High-Risk Correlation</span>
-                                <p className="text-sm text-slate-300">Projects skipping the <strong className="text-white">Learning Needs Analysis (LNA)</strong> in Phase 3 correlate with a 40% drop in 'Ability' scores during Phase 5 ADKAR diagnostics. <br/><br/><span className="text-violet-300 cursor-pointer hover:underline">→ Recommend mandating LNA for High Impact projects.</span></p>
-                            </div>
-                            <div className="bg-amber-500/10 border border-amber-500/20 p-4 rounded-xl">
-                                <span className="text-amber-400 font-bold text-xs uppercase tracking-wider block mb-1">Toolkit Update Recommended</span>
-                                <p className="text-sm text-slate-300">The standard <strong className="text-white">'Ward Poster' Comms Template</strong> is frequently rewritten by users to be significantly shorter. <br/><br/><span className="text-violet-300 cursor-pointer hover:underline">→ Auto-generate updated V4 template draft?</span></p>
+                                <p className="text-sm text-slate-300">Projects skipping the <strong className="text-white">Learning Needs Analysis (LNA)</strong> correlate with a 40% drop in 'Ability' scores. <br/><br/><span className="text-violet-300 cursor-pointer hover:underline">→ Recommend mandating LNA for High Impact projects.</span></p>
                             </div>
                         </div>
                     </div>
@@ -1019,29 +936,76 @@
             </div>
         );
 
+        const SplashScreen = ({ onEnter }) => {
+            return (
+                <div className="min-h-screen flex items-center justify-center bg-slate-900 relative overflow-hidden px-4">
+                    {/* Background Decorative Elements */}
+                    <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-violet-600/30 blur-[120px] rounded-full pointer-events-none"></div>
+                    <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-blue-600/20 blur-[120px] rounded-full pointer-events-none"></div>
+                    
+                    <div className="max-w-2xl w-full bg-white/5 backdrop-blur-xl border border-white/10 p-8 md:p-12 rounded-3xl shadow-2xl relative z-10 animate-fade-in-up text-center">
+                        <div className="w-20 h-20 mx-auto bg-gradient-to-br from-violet-500 to-fuchsia-600 rounded-2xl flex items-center justify-center mb-6 shadow-lg border border-white/20">
+                            <Icons.Brain className="text-white w-10 h-10" />
+                        </div>
+                        
+                        <h1 className="text-3xl md:text-4xl font-bold text-white mb-2 tracking-tight">
+                            HPCA AI Change Portal <span className="text-violet-400">V3</span>
+                        </h1>
+                        <p className="text-slate-400 text-lg mb-8 font-medium">Interactive Ecosystem Prototype</p>
+                        
+                        <div className="bg-amber-500/10 border border-amber-500/20 rounded-2xl p-6 mb-8 text-left">
+                            <div className="flex items-center mb-3">
+                                <Icons.HelpCircle className="w-6 h-6 text-amber-400 mr-3 shrink-0" />
+                                <h3 className="text-amber-400 font-bold text-lg">Simulation Notice</h3>
+                            </div>
+                            <p className="text-slate-300 text-sm leading-relaxed mb-4">
+                                Welcome to the HPCA demonstration environment. Please note that this is a <strong>high-fidelity interactive prototype</strong> designed to showcase the strategic vision for the NHS England partnership.
+                            </p>
+                            <ul className="text-slate-400 text-sm space-y-2">
+                                <li className="flex items-start"><Icons.Check className="w-4 h-4 text-amber-500 mr-2 shrink-0 mt-0.5" /> <strong>Restricted Functionality:</strong> Tools operate using simulated, pre-defined NHS scenarios.</li>
+                                <li className="flex items-start"><Icons.Check className="w-4 h-4 text-amber-500 mr-2 shrink-0 mt-0.5" /> <strong>Mock AI Responses:</strong> Wait times and AI outputs are mocked to ensure a seamless pitch experience.</li>
+                                <li className="flex items-start"><Icons.Check className="w-4 h-4 text-amber-500 mr-2 shrink-0 mt-0.5" /> <strong>No Persistent Data:</strong> Any text you input will reset when the browser is refreshed.</li>
+                            </ul>
+                        </div>
+                        
+                        <button 
+                            onClick={onEnter} 
+                            className="bg-white text-slate-900 hover:bg-slate-100 px-8 py-3.5 rounded-xl font-bold transition-all shadow-md flex items-center justify-center w-full sm:w-auto mx-auto group"
+                        >
+                            Acknowledge & Enter Simulation <Icons.MonitorPlay className="ml-2 w-5 h-5 group-hover:scale-110 transition-transform" />
+                        </button>
+                    </div>
+                </div>
+            );
+        };
+
         const App = () => {
+            const [showSplash, setShowSplash] = useState(true);
             const [currentStep, setCurrentStep] = useState(1);
             const [experienceLevel, setExperienceLevel] = useState("novice");
             const [isSettingsOpen, setIsSettingsOpen] = useState(false);
             const [isLiveMode, setIsLiveMode] = useState(false);
-            const [apiKey, setApiKey] = useState(localStorage.getItem('hpca_gemini_key') || '');
+            const [apiKey, setApiKey] = useState('');
 
             const steps = [
-                { id: 1, name: "Dashboard", icon: Icons.Activity },
-                { id: 2, name: "Phase 1: Pre-Discovery", icon: Icons.Brain },
-                { id: 3, name: "Phase 2 & 3: App Suite", icon: Icons.Settings },
-                { id: 4, name: "Phase 5: Post-Deployment", icon: Icons.Target },
-                { id: 5, name: "Reporting", icon: Icons.PieChart },
-                { id: 6, name: "Actions Log", icon: Icons.List },
-                { id: 7, name: "Learning Portfolio", icon: Icons.Award },
-                { id: 8, name: "Training Simulator", icon: Icons.MonitorPlay },
-                { id: 9, name: "Enterprise Analytics", icon: Icons.BarChart2 },
-                { id: 10, name: "Development Log", icon: Icons.History }
+                { id: 1, name: "Dashboard Overview", icon: Icons.Activity },
+                { id: 2, name: "Ph 1: Pre-Discovery", icon: Icons.Brain },
+                { id: 3, name: "Ph 2/3: Plan & Design", icon: Icons.Settings },
+                { id: 4, name: "Ph 4: Deployment", icon: Icons.MonitorPlay },
+                { id: 5, name: "Ph 5: Post-Live (ADKAR)", icon: Icons.Target },
+                { id: 6, name: "Learning Portfolio", icon: Icons.Award },
+                { id: 7, name: "Training Sandbox", icon: Icons.Users },
+                { id: 8, name: "Enterprise Analytics", icon: Icons.BarChart2 }
             ];
+
+            if (showSplash) {
+                return <SplashScreen onEnter={() => setShowSplash(false)} />;
+            }
 
             return (
                 <div className="flex h-screen bg-slate-50 text-slate-900 font-sans overflow-hidden">
-                    {/* Settings Modal */}
+                    
+                    {/* Settings Modal (BYOK) */}
                     {isSettingsOpen && (
                         <div className="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-[100] flex items-center justify-center p-4">
                             <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden animate-fade-in-up">
@@ -1072,17 +1036,8 @@
                                         {isLiveMode && (
                                             <div className="mt-4 animate-fade-in-up">
                                                 <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">Gemini API Key</label>
-                                                <input 
-                                                    type="password" 
-                                                    value={apiKey}
-                                                    onChange={(e) => {
-                                                        setApiKey(e.target.value);
-                                                        localStorage.setItem('hpca_gemini_key', e.target.value);
-                                                    }}
-                                                    placeholder="Paste your API key here..."
-                                                    className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-violet-500 focus:ring-1 focus:ring-violet-500"
-                                                />
-                                                <p className="text-[10px] text-slate-500 mt-2">Key is stored securely in your browser's local storage and never sent to our servers. Because this demo is hosted on GitHub Pages, 'Bring Your Own Key' is required for live generation.</p>
+                                                <input type="password" value={apiKey} onChange={(e) => setApiKey(e.target.value)} placeholder="Paste your API key here..." className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-violet-500 focus:ring-1 focus:ring-violet-500" />
+                                                <p className="text-[10px] text-slate-500 mt-2">Key is stored securely in your browser's local storage and never sent to our servers.</p>
                                             </div>
                                         )}
                                     </div>
@@ -1094,7 +1049,7 @@
                         </div>
                     )}
 
-                    {/* Sidebar */}
+                    {/* Sidebar Navigation */}
                     <div className="w-64 bg-slate-900 text-slate-300 flex flex-col shadow-2xl z-50">
                         <div className="p-6 pb-2">
                             <div className="flex items-center space-x-3 mb-8">
@@ -1113,11 +1068,7 @@
                                 <button
                                     key={step.id}
                                     onClick={() => setCurrentStep(step.id)}
-                                    className={`w-full flex items-center px-4 py-3 text-sm font-medium rounded-xl transition-all duration-200 ${
-                                        currentStep === step.id 
-                                        ? 'bg-violet-600 text-white shadow-md shadow-violet-900/20' 
-                                        : 'hover:bg-slate-800 hover:text-white'
-                                    }`}
+                                    className={`w-full flex items-center px-4 py-3 text-sm font-medium rounded-xl transition-all duration-200 ${currentStep === step.id ? 'bg-violet-600 text-white shadow-md shadow-violet-900/20' : 'hover:bg-slate-800 hover:text-white'}`}
                                 >
                                     <step.icon className={`mr-3 w-5 h-5 ${currentStep === step.id ? 'text-violet-200' : 'text-slate-500'}`} />
                                     {step.name}
@@ -1126,32 +1077,19 @@
                         </nav>
                     </div>
 
-                    {/* Main Content Area */}
+                    {/* Main Workspace */}
                     <div className="flex-1 flex flex-col h-screen overflow-y-auto bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAiIGhlaWdodD0iMjAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGNpcmNsZSBjeD0iMiIgY3k9IjIiIHI9IjEiIGZpbGw9InJnYmEoMjAzLCAyMTMsIDIyNSwgMC40KSIvPjwvc3ZnPg==')]">
                         <header className="glass-panel sticky top-0 z-40 px-8 py-4 flex justify-between items-center border-b border-slate-200">
                             <div>
                                 <h1 className="text-xl font-bold text-slate-800">{steps.find(s => s.id === currentStep)?.name}</h1>
-                                <p className="text-xs text-slate-500 font-medium mt-0.5">Project: EPR Ward Upgrade</p>
                             </div>
                             <div className="flex items-center space-x-4">
-                                {/* Github Link */}
-                                <a href="https://github.com" target="_blank" rel="noopener noreferrer" className="flex items-center text-xs font-semibold text-slate-500 hover:text-slate-800 transition-colors bg-white border border-slate-200 shadow-sm px-3 py-1.5 rounded-lg">
-                                    <Icons.Github className="w-4 h-4 mr-1.5" /> Suggest Feature
-                                </a>
-
-                                {/* Settings/Mode Toggle */}
                                 <button onClick={() => setIsSettingsOpen(true)} className={`flex items-center text-xs font-semibold px-3 py-1.5 rounded-lg border shadow-sm transition-all ${isLiveMode ? 'bg-violet-50 border-violet-200 text-violet-700' : 'bg-white border-slate-200 text-slate-600 hover:bg-slate-50'}`}>
                                     <Icons.Key className="w-4 h-4 mr-1.5" /> {isLiveMode ? 'Live AI Mode' : 'Simulation Mode'}
                                 </button>
-
-                                {/* Experience Level Selector */}
                                 <div className="flex items-center space-x-2 bg-white px-3 py-1.5 rounded-lg border border-slate-200 shadow-sm">
                                     <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider hidden sm:inline">My Experience:</span>
-                                    <select 
-                                        value={experienceLevel} 
-                                        onChange={(e) => setExperienceLevel(e.target.value)}
-                                        className="text-sm font-medium text-violet-700 bg-transparent outline-none cursor-pointer"
-                                    >
+                                    <select value={experienceLevel} onChange={(e) => setExperienceLevel(e.target.value)} className="text-sm font-medium text-violet-700 bg-transparent outline-none cursor-pointer">
                                         <option value="novice">Beginner / Accidental CM</option>
                                         <option value="intermediate">Intermediate / Project Manager</option>
                                         <option value="expert">Expert / Change Professional</option>
@@ -1159,17 +1097,15 @@
                                 </div>
                             </div>
                         </header>
-                        <main className="p-8 flex-1 relative">
+                        <main className="p-4 md:p-8 flex-1 relative">
                             {currentStep === 1 && <Dashboard onStart={() => setCurrentStep(2)} experienceLevel={experienceLevel} />}
                             {currentStep === 2 && <Phase1PreDiscovery onComplete={() => setCurrentStep(3)} experienceLevel={experienceLevel} />}
                             {currentStep === 3 && <AppSuite experienceLevel={experienceLevel} />}
-                            {currentStep === 4 && <PostDeployment experienceLevel={experienceLevel} />}
-                            {currentStep === 5 && <Reporting />}
-                            {currentStep === 6 && <ActionsLog />}
-                            {currentStep === 7 && <LearningPortfolio />}
-                            {currentStep === 8 && <TrainingSimulator />}
-                            {currentStep === 9 && <EnterpriseAnalytics />}
-                            {currentStep === 10 && <DevelopmentLog />}
+                            {currentStep === 4 && <Phase4Deployment />}
+                            {currentStep === 5 && <Phase5PostDeployment />}
+                            {currentStep === 6 && <LearningPortfolio />}
+                            {currentStep === 7 && <TrainingSimulator />}
+                            {currentStep === 8 && <EnterpriseAnalytics />}
                         </main>
                     </div>
                 </div>
