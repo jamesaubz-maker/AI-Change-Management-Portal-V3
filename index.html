@@ -257,7 +257,7 @@
         const Dashboard = ({ navigateTo, experienceLevel }) => {
             const introContent = {
                 novice: "We're here to guide you step-by-step. Don't worry about complex project jargon. Upload your documents, and the AI will help translate your goals into a clear, actionable change plan focusing on bringing people along.",
-                intermediate: "Access the essential tools from the NHS Change Management Toolkit V3. Streamline your CPIG mapping, ADKAR assessments, and engagement plans. Let the AI do the heavy lifting on drafting.",
+                intermediate: "Access the essential tools from the NHS Change Management Toolkit V7. Streamline your CPIG mapping, ADKAR assessments, and engagement plans. Let the AI do the heavy lifting on drafting.",
                 expert: "Accelerate your diagnostic and planning phases. The AI quickly parses large document sets to generate high-fidelity Force-Field models, readiness assessments, and impact matrices."
             };
 
@@ -362,7 +362,7 @@
 
             const experienceGuidance = {
                 novice: "Let's start simple. Drop your rough project notes or meeting minutes here. The AI will help you find the 'Why' behind this change and build a clear, jargon-free vision.",
-                intermediate: "Upload your initial project brief or outline business case. The AI will map your documentation to the NHS V3 Toolkit's Pre-Discovery requirements.",
+                intermediate: "Upload your initial project brief or outline business case. The AI will map your documentation to the NHS V7 Toolkit's Pre-Discovery requirements.",
                 expert: "Drop your Outline Business Case (OBC) here for rapid Simon Sinek Golden Circle extraction and baseline generation of your Compelling Case for Change."
             };
 
@@ -1566,8 +1566,9 @@
                                 </button>
                             ))}
                         </nav>
-                        <div className="p-4 text-center border-t border-white/10">
-                            <span className="text-[10px] text-slate-500 uppercase tracking-wider font-bold">Powered by Gemini AI</span>
+                        <div className="p-4 text-center border-t border-white/10 flex flex-col space-y-1">
+                            <span className="text-[10px] text-slate-400 uppercase tracking-wider font-bold">Developed by CADAS-AI</span>
+                            <span className="text-[9px] text-slate-500 uppercase tracking-wider font-bold">Powered by Gemini AI</span>
                         </div>
                     </div>
 
